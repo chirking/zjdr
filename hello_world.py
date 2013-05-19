@@ -1,5 +1,4 @@
-from flask import Flask
-app = Flask(__name__)
+from zjdr import app
 
 @app.route('/')
 def hello_world():
