@@ -17,11 +17,13 @@ def wx_zjdr():
 			request.args.get('echostr'))
 		return wxEchostr.check_and_get_echostr()
 	
-	_logger.warn(request.args)
-	_logger.warn(request.form)
-	wx_msg = get_WxMsg(request.form['aa'])
+	_logger.warn(request.data)
+	wx_msg = get_WxMsg(request.data)
 
 	if None==wx_msg:
 		return None
 	return_msg = wx_msg.receive()
-	return get_xml(return_msg)
+	return_xml = get_xml(return_msg)
+
+	_logger.warn(return_xml)
+	return return_xml
