@@ -3,7 +3,7 @@ from flask import request
 
 from wx_msg import *
 
-@app.route('/wx_zjdr')
+@app.route('/wx_zjdr', methods=['POST', 'GET'])
 def wx_zjdr():
 	if('echostr' in request.args):
 		wxEchostr = WxEchostr(
