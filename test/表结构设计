@@ -1,0 +1,38 @@
+用户表：
+user
+
+long id
+string openId
+int openIdType
+string name
+int status
+
+
+
+电视剧表：
+movie
+
+
+long id
+string name
+string summary
+int all_sets
+int now_sets
+boolean is_finished
+date create_time
+date update_time
+string douban_url
+string pic_url
+string youku_url
+
+
+
+订阅表：
+movie_sub
+
+
+long user_id
+long movie_id
+date create_time
+date notify_time
+int notify_set
