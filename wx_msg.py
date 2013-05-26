@@ -74,7 +74,7 @@ class TextMsg(BaseContentMsg):
 	def receive(self):
 		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		Msg.Content = '呵呵'
+		Msg.Content = self.Content+':呵呵'
 
 		return Msg
 
@@ -258,14 +258,17 @@ def get_xml(respMsg):
 	else:
 		pass
 
-	return ElementTree.tostring(root)
+	return ElementTree.tostring(root, SYS_ENCODING)
 
 def getElementText(text):
 	if None==text:
 		return None
 
-	return str(text).decode(SYS_ENCODING)
-	#return '<![CDATA['+str(text).decode(SYS_ENCODING)+']]>'
+	if isinstance(text, unicode):
+		return text
+	if isinstance(text, str):
+		return text.decode(SYS_ENCODING)
+	return str(text)
 
 
 if __name__=="__main__":
@@ -283,10 +286,12 @@ if __name__=="__main__":
 	msg = get_ReqMsg(xml)
 	print msg
 
-	resp_msg = Msg.receive() 
+	resp_msg = msg.receive() 
 	print resp_msg
 
-	print get_xml(resp_msg)
+	xml = get_xml(resp_msg)
+	print xml
+	print xml.decode('utf-8')
 
 	pass
 
