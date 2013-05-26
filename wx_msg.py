@@ -74,7 +74,7 @@ class TextMsg(BaseContentMsg):
 	def receive(self):
 		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		Msg.Content = self.Content+':呵呵'
+		Msg.Content = self.Content+':呵呵<<>>>'
 
 		return Msg
 
@@ -230,7 +230,9 @@ def get_text_from_Node(name, node):
 	nodes = node.getiterator(name)
 	if None==nodes or 0==len(nodes):
 		return None;
-	return nodes[0].text
+	if None==nodes[0].text:
+		return None;
+	return nodes[0].text.encode(SYS_ENCODING)
 
 
 def get_xml(respMsg):
@@ -278,7 +280,7 @@ if __name__=="__main__":
 		 <FromUserName><![CDATA[fromUser]]></FromUserName> 
 		 <CreateTime>1348831860</CreateTime>
 		 <MsgType><![CDATA[text]]></MsgType>
-		 <Content><![CDATA[this is a test]]></Content>
+		 <Content><![CDATA[this is a test 》》]]></Content>
 		 <MsgId>1234567890123456</MsgId>
 		</xml>
 	'''
