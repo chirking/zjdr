@@ -21,15 +21,23 @@ def wx_zjdr():
 			return wxEchostr.check_and_get_echostr()
 		
 		logger.warn("request: "+request.data)
-		wx_msg = get_ReqMsg(request.data)
+		# wx_msg = get_ReqMsg(request.data)
 
-		if None==wx_msg:
-			return 'success'
-		resp_msg = wx_msg.receive()
-		resp_xml = get_xml(resp_msg)
+		# if None==wx_msg:
+		# 	return 'success'
+		# resp_msg = wx_msg.receive()
+		# resp_xml = get_xml(resp_msg)
 
-		logger.warn("response: "+resp_xml)
-		return resp_xml
+		# logger.warn("response: "+resp_xml)
+		# return resp_xml
+		return '''<xml>
+ <ToUserName><![CDATA[oCpntjhPeYRhrLVu1X6wRJkDG95A]]></ToUserName>
+ <FromUserName><![CDATA[gh_75c4764ac0b5]]></FromUserName>
+ <CreateTime>12345678</CreateTime>
+ <MsgType><![CDATA[text]]></MsgType>
+ <Content><![CDATA[content]]></Content>
+ <FuncFlag>0</FuncFlag>
+ </xml>'''
 	except Exception, e:
 		logger.warn("/wx_zjdr error:"+str(e))
 		return '未知异常'
