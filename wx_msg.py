@@ -3,9 +3,10 @@
 from xml.etree import ElementTree
 
 MY_WEIXIN_ID = "chirking@outlook.com"
+SYS_ENCODING = "UTF-8"
 
-class WxEchostr(object):
-	"""docstring for WxEchostr"""
+class Echostr(object):
+	"""docstring for Echostr"""
 
 	signature = None # 微信加密签名
 	timestamp = None # 时间戳
@@ -22,8 +23,8 @@ class WxEchostr(object):
 		return self.echostr
 
 
-class BaseWxMsg(object):
-	"""docstring for BaseWxMsg"""
+class BaseMsg(object):
+	"""docstring for BaseMsg"""
 
 	ToUserName = None # 开发者微信号
 	FromUserName = None # 发送方帐号（一个OpenID）
@@ -37,40 +38,61 @@ class BaseWxMsg(object):
 		pass
 
 
-class BaseWxContentMsg(BaseWxMsg):
-	"""docstring for BaseWxTextMsg"""
+class BaseReqMsg(BaseMsg):
+		"""docstring for BaseReqMsg"""
+
+
+class BaseRespMsg(BaseMsg):
+	"""docstring for BaseResp"""
+
+	def __init__(self, ToUserName, CreateTime=None):
+		self.FromUserName = MY_WEIXIN_ID
+		self.ToUserName = ToUserName
+		self.CreateTime = CreateTime
+
+
+class BaseContentMsg(BaseReqMsg):
+	"""docstring for BaseTextMsg"""
 	
 	MsgId = None # 消息id，64位整型
 
 
-class BaseWxEventMsg(BaseWxMsg):
-	"""docstring for BaseWxEvent"""
+class BaseEventMsg(BaseReqMsg):
+	"""docstring for BaseEvent"""
 
+	MsgType = 'event'
 	Event = None # 事件类型，subscribe(订阅)、unsubscribe(取消订阅)、CLICK(自定义菜单点击事件)
 	EventKey = None # 事件KEY值，与自定义菜单接口中KEY值对应
 		
 
-class TextWxMsg(BaseWxContentMsg):
-	"""docstring for TextWxMsg"""
+class TextMsg(BaseContentMsg):
+	"""docstring for TextMsg"""
 
+	MsgType = 'text'
 	Content = None # 文本消息内容
 
 	def receive(self):
-		pass
+		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
+
+		Msg.Content = '呵呵'
+
+		return Msg
 
 
-class ImageWxMsg(BaseWxContentMsg):
-	"""docstring for TextWxMsg"""
+class ImageMsg(BaseContentMsg):
+	"""docstring for TextMsg"""
 
+	MsgType = 'image'
 	PicUrl = None # 图片链接
 
 	def receive(self):
 		pass
 
 
-class LocationWxMsg(BaseWxContentMsg):
-	"""docstring for TextWxMsg"""
+class LocationMsg(BaseContentMsg):
+	"""docstring for TextMsg"""
 
+	MsgType = 'location'
 	Location_X = None # 地理位置纬度
 	Location_Y = None # 地理位置经度
 	Scale = None # 地图缩放大小
@@ -80,9 +102,10 @@ class LocationWxMsg(BaseWxContentMsg):
 		pass
 
 
-class LinkWxMsg(BaseWxContentMsg):
-	"""docstring for TextWxMsg"""
+class LinkMsg(BaseContentMsg):
+	"""docstring for TextMsg"""
 
+	MsgType = 'like'
 	Title = None # 消息标题
 	Description = None # 消息描述
 	Url = None # 消息链接
@@ -91,28 +114,68 @@ class LinkWxMsg(BaseWxContentMsg):
 		pass
 
 		
-class SubscribeWxEventMsg(BaseWxEventMsg):
-	"""docstring for EventWxMsg"""
+class SubscribeEventMsg(BaseEventMsg):
+	"""docstring for EventMsg"""
+
+	Event = 'subscribe'
 
 	def receive(self):
 		pass
 
 
-class UnSubscribeWxEventMsg(BaseWxEventMsg):
-	"""docstring for UnSubscribeWxEventMsg"""
+class UnSubscribeEventMsg(BaseEventMsg):
+	"""docstring for UnSubscribeEventMsg"""
+
+	Event = 'unsubscribe'
 
 	def receive(self):
 		pass
 
 
-class ClickWxEventMsg(BaseWxEventMsg):
-	"""docstring for ClickWxEventMsg"""
+class ClickEventMsg(BaseEventMsg):
+	"""docstring for ClickEventMsg"""
+
+	Event = 'CLICK'
 
 	def receive(self):
 		pass
 
 
-def get_WxMsg(xml):
+class BaseRespContentMsg(BaseRespMsg):
+	"""docstring for BaseRespContentMsg"""
+
+	FuncFlag = None # 位0x0001被标志时，星标刚收到的消息。
+	
+
+class RespTextMsg(BaseRespContentMsg):
+	"""docstring for RespTextMsg"""
+		
+	MsgType = 'text'
+	Content = None # 回复的消息内容,长度不超过2048字节
+				
+
+class RespMusicMsg(BaseRespContentMsg):
+	"""docstring for RespMusicMsg"""
+	
+	MsgType = 'music'
+	MusicUrl = None # 音乐链接
+	HQMusicUrl = None # 高质量音乐链接，WIFI环境优先使用该链接播放音乐
+
+
+class RespNewsMsg(BaseRespContentMsg):
+	"""docstring for RespNewsMsg"""
+		
+	MsgType = 'news'
+	ArticleCount = None # 图文消息个数，限制为10条以内
+	Articles = None # 多条图文消息信息，默认第一个item为大图
+	Title = None # 图文消息标题
+	Description = None # 图文消息描述
+	PicUrl = None # 图片链接，支持JPG、PNG格式，较好的效果为大图640*320，小图80*80。
+	Url = None # 点击图文消息跳转链接
+
+
+
+def get_Msg(xml):
 	if None==xml or ''==xml:
 		return None
 	root = ElementTree.fromstring(xml).getiterator("xml")
@@ -122,46 +185,45 @@ def get_WxMsg(xml):
 
 	MsgType = get_text_from_Node("MsgType", root)
 
-	wxMsg = None
+	Msg = None
 
 	if 'text'==MsgType:
-		wxMsg = TextWxMsg()
-		wxMsg.Content = get_text_from_Node("Content", root)
+		Msg = TextMsg()
+		Msg.Content = get_text_from_Node("Content", root)
 	elif 'image'==MsgType:
-		wxMsg = ImageWxMsg()
-		wxMsg.PicUrl = get_text_from_Node("PicUrl", root)
+		Msg = ImageMsg()
+		Msg.PicUrl = get_text_from_Node("PicUrl", root)
 	elif 'location'==MsgType:
-		wxMsg = LocationWxMsg()
-		wxMsg.Location_X = get_text_from_Node("Location_X", root)
-		wxMsg.Location_Y = get_text_from_Node("Location_Y", root)
-		wxMsg.Scale = get_text_from_Node("Scale", root)
-		wxMsg.Label = get_text_from_Node("Label", root)
+		Msg = LocationMsg()
+		Msg.Location_X = get_text_from_Node("Location_X", root)
+		Msg.Location_Y = get_text_from_Node("Location_Y", root)
+		Msg.Scale = get_text_from_Node("Scale", root)
+		Msg.Label = get_text_from_Node("Label", root)
 	elif 'link'==MsgType:
-		wxMsg = LinkWxMsg()
-		wxMsg.Title = get_text_from_Node("Title", root)
-		wxMsg.Description = get_text_from_Node("Description", root)
-		wxMsg.Url = get_text_from_Node("Url", root)
+		Msg = LinkMsg()
+		Msg.Title = get_text_from_Node("Title", root)
+		Msg.Description = get_text_from_Node("Description", root)
+		Msg.Url = get_text_from_Node("Url", root)
 	elif 'event'==MsgType:
 		Event = get_text_from_Node("Event", root)
 		if 'subscribe'==Event:
-			wxMsg = SubscribeWxEventMsg()
+			Msg = SubscribeEventMsg()
 		elif 'unsubscribe'==Event:
-			wxMsg = UnSubscribeWxEventMsg()
+			Msg = UnSubscribeEventMsg()
 		elif 'CLICK'==Event:
-			wxMsg = ClickWxEventMsg()
+			Msg = ClickEventMsg()
 		else:
 			return None
-		wxMsg.Event = Event
-		wxMsg.EventKey = get_text_from_Node("EventKey", root)
+		Msg.Event = Event
+		Msg.EventKey = get_text_from_Node("EventKey", root)
 	else:
 		return None
 
-	wxMsg.ToUserName = get_text_from_Node("ToUserName", root)
-	wxMsg.FromUserName = get_text_from_Node("FromUserName", root)
-	wxMsg.CreateTime = get_text_from_Node("CreateTime", root)
-	wxMsg.MsgType = get_text_from_Node("MsgType", root)
+	Msg.ToUserName = get_text_from_Node("ToUserName", root)
+	Msg.FromUserName = get_text_from_Node("FromUserName", root)
+	Msg.CreateTime = get_text_from_Node("CreateTime", root)
 
-	return wxMsg
+	return Msg
 
 
 def get_text_from_Node(name, node):
@@ -171,8 +233,38 @@ def get_text_from_Node(name, node):
 	return nodes[0].text
 
 
-def get_xml(wxMsg):
-	pass
+def get_xml(respMsg):
+	if None==Msg:
+		return None
+
+	root = ElementTree.Element('xml')
+
+	ElementTree.SubElement(root, "ToUserName").text = getElementText(respMsg.ToUserName)
+	ElementTree.SubElement(root, "FromUserName").text = getElementText(respMsg.FromUserName)
+	ElementTree.SubElement(root, "CreateTime").text = getElementText(respMsg.CreateTime)
+	ElementTree.SubElement(root, "MsgType").text = getElementText(respMsg.MsgType)
+
+	ElementTree.SubElement(root, "FuncFlag").text = getElementText(respMsg.FuncFlag)
+
+	MsgType = Msg.MsgType
+	if 'text'==MsgType:
+		ElementTree.SubElement(root, "Content").text = getElementText(respMsg.Content)
+	elif 'music'==MsgType:
+		ElementTree.SubElement(root, "MusicUrl").text = getElementText(Msg.MusicUrl)
+		ElementTree.SubElement(root, "HQMusicUrl").text = getElementText(Msg.HQMusicUrl)
+	elif 'news'==MsgType:
+		pass
+		# TODO
+	else:
+		pass
+
+	return ElementTree.tostring(root)
+
+def getElementText(text):
+	if None==text:
+		return None
+
+	return '<![CDATA['+str(text).decode(SYS_ENCODING)+']]>'
 
 
 if __name__=="__main__":
@@ -187,7 +279,13 @@ if __name__=="__main__":
 		</xml>
 	'''
 
-	print get_WxMsg(xml)
+	Msg = get_Msg(xml)
+	print Msg
+
+	returnMsg = Msg.receive() 
+	print returnMsg
+
+	print get_xml(returnMsg)
 
 	pass
 
