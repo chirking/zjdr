@@ -2,7 +2,7 @@
 
 from xml.etree import ElementTree
 
-MY_WEIXIN_ID = "chirking@outlook.com"
+MY_WEIXIN_ID = "gh_75c4764ac0b5"
 SYS_ENCODING = "UTF-8"
 
 class Echostr(object):
