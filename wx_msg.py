@@ -264,7 +264,8 @@ def getElementText(text):
 	if None==text:
 		return None
 
-	return '<![CDATA['+str(text).decode(SYS_ENCODING)+']]>'
+	return str(text).decode(SYS_ENCODING)
+	#return '<![CDATA['+str(text).decode(SYS_ENCODING)+']]>'
 
 
 if __name__=="__main__":
