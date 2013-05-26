@@ -144,7 +144,7 @@ class ClickEventMsg(BaseEventMsg):
 class BaseRespContentMsg(BaseRespMsg):
 	"""docstring for BaseRespContentMsg"""
 
-	FuncFlag = None # 位0x0001被标志时，星标刚收到的消息。
+	FuncFlag = 1 # 位0x0001被标志时，星标刚收到的消息。
 	
 
 class RespTextMsg(BaseRespContentMsg):
@@ -175,7 +175,7 @@ class RespNewsMsg(BaseRespContentMsg):
 
 
 
-def get_Msg(xml):
+def get_ReqMsg(xml):
 	if None==xml or ''==xml:
 		return None
 	root = ElementTree.fromstring(xml).getiterator("xml")
@@ -185,45 +185,45 @@ def get_Msg(xml):
 
 	MsgType = get_text_from_Node("MsgType", root)
 
-	Msg = None
+	msg = None
 
 	if 'text'==MsgType:
-		Msg = TextMsg()
-		Msg.Content = get_text_from_Node("Content", root)
+		msg = TextMsg()
+		msg.Content = get_text_from_Node("Content", root)
 	elif 'image'==MsgType:
-		Msg = ImageMsg()
-		Msg.PicUrl = get_text_from_Node("PicUrl", root)
+		msg = ImageMsg()
+		msg.PicUrl = get_text_from_Node("PicUrl", root)
 	elif 'location'==MsgType:
-		Msg = LocationMsg()
-		Msg.Location_X = get_text_from_Node("Location_X", root)
-		Msg.Location_Y = get_text_from_Node("Location_Y", root)
-		Msg.Scale = get_text_from_Node("Scale", root)
-		Msg.Label = get_text_from_Node("Label", root)
+		msg = LocationMsg()
+		msg.Location_X = get_text_from_Node("Location_X", root)
+		msg.Location_Y = get_text_from_Node("Location_Y", root)
+		msg.Scale = get_text_from_Node("Scale", root)
+		msg.Label = get_text_from_Node("Label", root)
 	elif 'link'==MsgType:
-		Msg = LinkMsg()
-		Msg.Title = get_text_from_Node("Title", root)
-		Msg.Description = get_text_from_Node("Description", root)
-		Msg.Url = get_text_from_Node("Url", root)
+		msg = LinkMsg()
+		msg.Title = get_text_from_Node("Title", root)
+		msg.Description = get_text_from_Node("Description", root)
+		msg.Url = get_text_from_Node("Url", root)
 	elif 'event'==MsgType:
 		Event = get_text_from_Node("Event", root)
 		if 'subscribe'==Event:
-			Msg = SubscribeEventMsg()
+			msg = SubscribeEventMsg()
 		elif 'unsubscribe'==Event:
-			Msg = UnSubscribeEventMsg()
+			msg = UnSubscribeEventMsg()
 		elif 'CLICK'==Event:
-			Msg = ClickEventMsg()
+			msg = ClickEventMsg()
 		else:
 			return None
-		Msg.Event = Event
-		Msg.EventKey = get_text_from_Node("EventKey", root)
+		msg.Event = Event
+		msg.EventKey = get_text_from_Node("EventKey", root)
 	else:
 		return None
 
-	Msg.ToUserName = get_text_from_Node("ToUserName", root)
-	Msg.FromUserName = get_text_from_Node("FromUserName", root)
-	Msg.CreateTime = get_text_from_Node("CreateTime", root)
+	msg.ToUserName = get_text_from_Node("ToUserName", root)
+	msg.FromUserName = get_text_from_Node("FromUserName", root)
+	msg.CreateTime = get_text_from_Node("CreateTime", root)
 
-	return Msg
+	return msg
 
 
 def get_text_from_Node(name, node):
@@ -234,7 +234,7 @@ def get_text_from_Node(name, node):
 
 
 def get_xml(respMsg):
-	if None==Msg:
+	if None==respMsg:
 		return None
 
 	root = ElementTree.Element('xml')
@@ -246,12 +246,12 @@ def get_xml(respMsg):
 
 	ElementTree.SubElement(root, "FuncFlag").text = getElementText(respMsg.FuncFlag)
 
-	MsgType = Msg.MsgType
+	MsgType = respMsg.MsgType
 	if 'text'==MsgType:
 		ElementTree.SubElement(root, "Content").text = getElementText(respMsg.Content)
 	elif 'music'==MsgType:
-		ElementTree.SubElement(root, "MusicUrl").text = getElementText(Msg.MusicUrl)
-		ElementTree.SubElement(root, "HQMusicUrl").text = getElementText(Msg.HQMusicUrl)
+		ElementTree.SubElement(root, "MusicUrl").text = getElementText(respMsg.MusicUrl)
+		ElementTree.SubElement(root, "HQMusicUrl").text = getElementText(respMsg.HQMusicUrl)
 	elif 'news'==MsgType:
 		pass
 		# TODO
@@ -279,13 +279,13 @@ if __name__=="__main__":
 		</xml>
 	'''
 
-	Msg = get_Msg(xml)
-	print Msg
+	msg = get_ReqMsg(xml)
+	print msg
 
-	returnMsg = Msg.receive() 
-	print returnMsg
+	resp_msg = Msg.receive() 
+	print resp_msg
 
-	print get_xml(returnMsg)
+	print get_xml(resp_msg)
 
 	pass
 
