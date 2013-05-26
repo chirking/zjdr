@@ -3,11 +3,9 @@
 from zjdr import app
 from flask import request
 import logging
-
-# create logger
-logger = logging.getLogger('zjdr.wx_zjdr')
-
 from wx_msg import *
+
+logger = logging.getLogger('zjdr.wx_zjdr')
 
 @app.route('/wx_zjdr', methods=['POST', 'GET'])
 def wx_zjdr():

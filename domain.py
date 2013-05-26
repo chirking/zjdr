@@ -32,6 +32,7 @@ class User(BaseDO):
   id = None
   open_id = None
   open_id_type = None
+  wx_fakeid = None
   status = None
 
 
@@ -44,14 +45,22 @@ class Movie(BaseDO):
   season = None
   summary = None
   pic_url = None
-  movie_url = None
   all_sets = None
-  now_sets = None
+  now_set = None
   is_finished = None
   begin_time = None
   update_time = None
   douban_url = None
   youku_url = None
+
+
+class MovieSet(BaseDO):
+  movie_code = None
+  set_num = None
+  update_time = None
+  movie_url = None
+  youku_url = None
+  wx_msg_id = None
 
 
 class MovieSub(BaseDO):

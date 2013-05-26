@@ -120,7 +120,11 @@ class SubscribeEventMsg(BaseEventMsg):
 	Event = 'subscribe'
 
 	def receive(self):
-		pass
+		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
+
+		Msg.Content = '你好，我是追剧达人. :) '+self.FromUserName
+
+		return Msg
 
 
 class UnSubscribeEventMsg(BaseEventMsg):
@@ -144,7 +148,7 @@ class ClickEventMsg(BaseEventMsg):
 class BaseRespContentMsg(BaseRespMsg):
 	"""docstring for BaseRespContentMsg"""
 
-	FuncFlag = 1 # 位0x0001被标志时，星标刚收到的消息。
+	FuncFlag = 0 # 位0x0001被标志时，星标刚收到的消息。
 	
 
 class RespTextMsg(BaseRespContentMsg):
