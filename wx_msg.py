@@ -2,6 +2,10 @@
 
 from xml.etree import ElementTree
 
+from image_add_info import get_info_pic_url
+
+from service import wx_subscribe
+
 MY_WEIXIN_ID = "gh_75c4764ac0b5"
 SYS_ENCODING = "UTF-8"
 
@@ -120,11 +124,34 @@ class SubscribeEventMsg(BaseEventMsg):
 	Event = 'subscribe'
 
 	def receive(self):
-		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
+		wx_subscribe(self.FromUserName)
 
-		Msg.Content = '你好，我是追剧达人. :) '+self.FromUserName
+		resp_msg = RespNewsMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		return Msg
+		resp_msg.ArticleCount = 2
+
+		base_pic_url = 'http://img3.douban.com/lpic/s26686430.jpg'
+		info_data = self.FromUserName
+
+		info_pic_url = get_info_pic_url(base_pic_url, info_data)
+
+		item1 = RespNewsMsgItem()
+		item1.Title = '你好，我是追剧达人'
+		item1.Description = '我是第一个图片'
+		item1.PicUrl = info_pic_url
+		item1.Url = 'http://book.douban.com/subject/11597326/'	
+
+		item2 = RespNewsMsgItem()
+		item2.Title = '你好，我真的是追剧达人'
+		item2.Description = '我是第二个图片'
+		item2.PicUrl = 'http://img5.douban.com/view/photo/photo/public/p1875637769.jpg'
+		item2.Url = 'http://movie.douban.com/subject/10777710/'	
+
+		resp_msg.Articles = []
+		resp_msg.Articles.append(item1)
+		resp_msg.Articles.append(item2)
+
+		return resp_msg
 
 
 class UnSubscribeEventMsg(BaseEventMsg):
@@ -172,11 +199,16 @@ class RespNewsMsg(BaseRespContentMsg):
 	MsgType = 'news'
 	ArticleCount = None # 图文消息个数，限制为10条以内
 	Articles = None # 多条图文消息信息，默认第一个item为大图
+
+
+class RespNewsMsgItem():
 	Title = None # 图文消息标题
 	Description = None # 图文消息描述
 	PicUrl = None # 图片链接，支持JPG、PNG格式，较好的效果为大图640*320，小图80*80。
-	Url = None # 点击图文消息跳转链接
+	Url = None # 点击图文消息跳转链接   
 
+	def __str__(self):
+		return str(self.__dict__)
 
 
 def get_ReqMsg(xml):
@@ -259,8 +291,24 @@ def get_xml(respMsg):
 		ElementTree.SubElement(root, "MusicUrl").text = getElementText(respMsg.MusicUrl)
 		ElementTree.SubElement(root, "HQMusicUrl").text = getElementText(respMsg.HQMusicUrl)
 	elif 'news'==MsgType:
-		pass
-		# TODO
+		ElementTree.SubElement(root, "ArticleCount").text = getElementText(respMsg.ArticleCount)
+		if None!=respMsg.Articles:
+			Articles = ElementTree.Element('Articles')
+
+			for msg_item in respMsg.Articles:
+				item = ElementTree.Element('item')
+				ElementTree.SubElement(item, "Title").text = getElementText(msg_item.Title)
+				ElementTree.SubElement(item, "Description").text = getElementText(msg_item.Description)
+				ElementTree.SubElement(item, "PicUrl").text = getElementText(msg_item.PicUrl)
+				ElementTree.SubElement(item, "Url").text = getElementText(msg_item.Url)
+
+				Articles.append(item)
+
+			# 	print ElementTree.tostring(item, SYS_ENCODING)
+
+			# print ElementTree.tostring(Articles, SYS_ENCODING)
+			
+			root.append(Articles)
 	else:
 		pass
 
@@ -277,16 +325,27 @@ def getElementText(text):
 	return str(text)
 
 
+
 if __name__=="__main__":
+	# xml='''
+	# 	<xml>
+	# 	 <ToUserName><![CDATA[toUser]]></ToUserName>
+	# 	 <FromUserName><![CDATA[fromUser]]></FromUserName> 
+	# 	 <CreateTime>1348831860</CreateTime>
+	# 	 <MsgType><![CDATA[text]]></MsgType>
+	# 	 <Content><![CDATA[this is a test 》》]]></Content>
+	# 	 <MsgId>1234567890123456</MsgId>
+	# 	</xml>
+	# '''
+
 	xml='''
-		<xml>
-		 <ToUserName><![CDATA[toUser]]></ToUserName>
-		 <FromUserName><![CDATA[fromUser]]></FromUserName> 
-		 <CreateTime>1348831860</CreateTime>
-		 <MsgType><![CDATA[text]]></MsgType>
-		 <Content><![CDATA[this is a test 》》]]></Content>
-		 <MsgId>1234567890123456</MsgId>
-		</xml>
+	<xml><ToUserName><![CDATA[toUser]]></ToUserName>
+		<FromUserName><![CDATA[FromUser]]></FromUserName>
+		<CreateTime>123456789</CreateTime>
+		<MsgType><![CDATA[event]]></MsgType>
+		<Event><![CDATA[subscribe]]></Event>
+		<EventKey><![CDATA[EVENTKEY]]></EventKey>
+	</xml>
 	'''
 
 	msg = get_ReqMsg(xml)

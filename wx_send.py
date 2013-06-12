@@ -9,6 +9,8 @@ import tempfile
 
 logger = logging.getLogger('zjdr.wx_send')
 
+user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31'
+
 headers = {
   'Accept':'*/*',
   'Accept-Charset':'GBK,utf-8;q=0.7,*;q=0.3',
@@ -41,13 +43,13 @@ def http_post(url, parms, headers=headers):
     result = urllib2.urlopen(req)
     
     resp_str = result.read()
-    print resp_str
+    # print resp_str
     resp = eval(resp_str)
     return resp
 
 
 def login(username, pwd):
-    resp_str = ''
+    resp = ''
     try:
         url = "https://mp.weixin.qq.com/cgi-bin/login?lang=zh_CN"
 
@@ -79,12 +81,12 @@ def login(username, pwd):
         raise Exception('no ErrMsg')
 
     except Exception,e:
-        print 'login error resp_str='+resp_str, e
-        logger.error('login error resp_str='+resp_str, e)
+        print 'login error resp='+str(resp), e
+        logger.error('login error resp='+str(resp), e)
 
 
 def send(token, appmsgid, tofakeid):
-    resp_str = ''
+    resp = ''
     try:
         url = 'https://mp.weixin.qq.com/cgi-bin/singlesend?t=ajax-response&lang=zh_CN'
 
@@ -116,11 +118,11 @@ def send(token, appmsgid, tofakeid):
         raise Exception('unknow ret')
 
     except Exception,e:
-        logger.error('login error resp_str='+resp_str, e)
+        logger.error('login error resp='+str(resp), e)
 
 
 def create_msg_0(token):
-    resp_str = ''
+    resp = ''
     try:
         url = 'https://mp.weixin.qq.com/cgi-bin/operate_appmsg?lang=zh_CN&t=ajax-response&sub=create'
 
@@ -150,12 +152,12 @@ def create_msg_0(token):
         raise Exception('unknow ret')
 
     except Exception,e:
-        print 'add_msg error resp_str='+resp_str, e
-        logger.error('add_msg error resp_str='+resp_str, e)
+        print 'add_msg error resp='+str(resp), e
+        logger.error('add_msg error resp='+str(resp), e)
 
 
 def create_msg(token):
-    resp_str = ''
+    resp = ''
     try:
         url = 'https://mp.weixin.qq.com/cgi-bin/operate_appmsg?sub=preview&t=ajax-appmsg-preview'
 
@@ -187,12 +189,12 @@ def create_msg(token):
         raise Exception('unknow ret')
 
     except Exception,e:
-        print 'create_msg error resp_str='+resp_str, e
-        logger.error('create_msg error resp_str='+resp_str, e)
+        print 'create_msg error resp='+str(resp), e
+        logger.error('create_msg error resp='+str(resp), e)
 
 
 def update_msg(token, appmsgid):
-    resp_str = ''
+    resp = ''
     try:
         url = 'https://mp.weixin.qq.com/cgi-bin/operate_appmsg?sub=preview&t=ajax-appmsg-preview'
 
@@ -229,12 +231,12 @@ def update_msg(token, appmsgid):
         raise Exception('unknow ret')
 
     except Exception,e:
-        print 'update_msg error resp_str='+resp_str, e
-        logger.error('update_msg error resp_str='+resp_str, e)
+        print 'update_msg error resp='+str(resp), e
+        logger.error('update_msg error resp='+str(resp), e)
 
 
 def upload_cover_image(token, file, filename):
-    resp_str = ''
+    resp = ''
     try:
         url = 'https://mp.weixin.qq.com/cgi-bin/uploadmaterial?cgi=uploadmaterial&type=2&t=iframe-uploadfile&lang=zh_CN&formId=1'
 
@@ -260,24 +262,27 @@ def upload_cover_image(token, file, filename):
         req  = urllib2.Request(url, datagen, post_headers)
 
         # 上传文件并获得响应信息
-        resp_str = urllib2.urlopen(req).read()
-        # print resp_str
+        resp = urllib2.urlopen(req).read()
+        # print resp
 
-        if None==resp_str or ''==resp_str:
-            raise Exception("None==resp_str")
-        m = re.search(r'formId,\ \'(\d+)\'', resp_str)
+        if None==resp or ''==resp:
+            raise Exception("None==resp")
+        m = re.search(r'formId,\ \'(\d+)\'', resp)
         if None==m:
             raise Exception("no formId")
         return m.group(1)
 
     except Exception,e:
-        print 'upload_cover_image error resp_str='+resp_str, e
-        logger.error('upload_cover_image error resp_str='+resp_str, e)
+        print 'upload_cover_image error resp='+str(resp), e
+        logger.error('upload_cover_image error resp='+str(resp), e)
 
 
 def upload_image(token, file, filename):
-    resp_str = ''
+    resp = ''
     try:
+        if None==token:
+            token = login(username, pwd)
+
         url = 'https://mp.weixin.qq.com/cgi-bin/uploadimg2cdn?t=ajax-editor-upload-img&lang=zh_CN'
 
         url = url+'&token='+token
@@ -302,19 +307,19 @@ def upload_image(token, file, filename):
         req  = urllib2.Request(url, datagen, post_headers)
 
         # 上传文件并获得响应信息
-        resp_str = urllib2.urlopen(req).read()
-        # print resp_str
+        resp = urllib2.urlopen(req).read()
+        # print resp
 
-        if None==resp_str or ''==resp_str:
-            raise Exception("None==resp_str")
-        resp = eval(resp_str)
+        if None==resp or ''==resp:
+            raise Exception("None==resp")
+        resp = eval(resp)
         if None==resp or 'url' not in resp:
             raise Exception("no url")
         return resp['url']
 
     except Exception,e:
-        print 'upload_image error resp_str='+resp_str, e
-        logger.error('upload_image error resp_str='+resp_str, e) 
+        print 'upload_image error resp='+str(resp), e
+        logger.error('upload_image error resp='+str(resp), e) 
 
 
 def download_file(url, file_type):
@@ -368,6 +373,7 @@ if __name__=="__main__":
     # update_appmsgid = update_msg(token, appmsgid)
     # print update_appmsgid   
 
-    login_and_send('10000059', '3957225')
+    # login_and_send('10000059', '3957225')
+
 
 

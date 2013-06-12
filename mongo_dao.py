@@ -66,6 +66,11 @@ class UserDAO(BaseDAO):
 		return self.to_User(json)
 
 
+	def get_user_by_wx_fakeid(self, wx_fakeid):
+		json = self.db.find_one({'wx_fakeid':wx_fakeid})
+		return self.to_User(json)
+
+
 class MovieDAO(BaseDAO):
 	"""docstring for MovieDAO"""
 	
