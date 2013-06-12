@@ -4,7 +4,7 @@ from xml.etree import ElementTree
 
 from image_add_info import get_info_pic_url
 
-from service import wx_subscribe
+from service import wx_subscribe, get_wx_user_by_open_id
 
 MY_WEIXIN_ID = "gh_75c4764ac0b5"
 SYS_ENCODING = "UTF-8"
@@ -76,6 +76,12 @@ class TextMsg(BaseContentMsg):
 	Content = None # 文本消息内容
 
 	def receive(self):
+
+		user = get_wx_user_by_open_id(self.FromUserName)
+		if None==user:
+			wx_subscribe(self.FromUserName)
+			return get_new_user_resp(self.FromUserName, self.CreateTime)	
+
 		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
 
 		Msg.Content = self.Content+':你好~ <<'+self.FromUserName+'>>'
@@ -126,38 +132,7 @@ class SubscribeEventMsg(BaseEventMsg):
 	def receive(self):
 		wx_subscribe(self.FromUserName)
 
-		# resp_msg = RespNewsMsg(self.FromUserName, int(self.CreateTime)+1)
-
-		# resp_msg.ArticleCount = 2
-
-		# base_pic_url = 'http://img3.douban.com/lpic/s26686430.jpg'
-		# info_data = self.FromUserName
-
-		# info_pic_url = get_info_pic_url(base_pic_url, info_data)
-
-		# item1 = RespNewsMsgItem()
-		# item1.Title = '你好，我是追剧达人'
-		# item1.Description = '我是第一个图片'
-		# item1.PicUrl = info_pic_url
-		# item1.Url = 'http://book.douban.com/subject/11597326/'	
-
-		# item2 = RespNewsMsgItem()
-		# item2.Title = '你好，我真的是追剧达人'
-		# item2.Description = '我是第二个图片'
-		# item2.PicUrl = 'http://img5.douban.com/view/photo/photo/public/p1875637769.jpg'
-		# item2.Url = 'http://movie.douban.com/subject/10777710/'	
-
-		# resp_msg.Articles = []
-		# resp_msg.Articles.append(item1)
-		# resp_msg.Articles.append(item2)
-
-		# 图片消息在管理页面上看不到，草！
-
-		resp_msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
-
-		resp_msg.Content = '你好，我是追剧达人. :) '+self.FromUserName
-
-		return resp_msg
+		return get_new_user_resp(self.FromUserName, self.CreateTime)
 
 
 class UnSubscribeEventMsg(BaseEventMsg):
@@ -215,6 +190,41 @@ class RespNewsMsgItem():
 
 	def __str__(self):
 		return str(self.__dict__)
+
+
+def get_new_user_resp(FromUserName, CreateTime):
+	# resp_msg = RespNewsMsg(self.FromUserName, int(self.CreateTime)+1)
+
+	# resp_msg.ArticleCount = 2
+
+	# base_pic_url = 'http://img3.douban.com/lpic/s26686430.jpg'
+	# info_data = self.FromUserName
+
+	# info_pic_url = get_info_pic_url(base_pic_url, info_data)
+
+	# item1 = RespNewsMsgItem()
+	# item1.Title = '你好，我是追剧达人'
+	# item1.Description = '我是第一个图片'
+	# item1.PicUrl = info_pic_url
+	# item1.Url = 'http://book.douban.com/subject/11597326/'	
+
+	# item2 = RespNewsMsgItem()
+	# item2.Title = '你好，我真的是追剧达人'
+	# item2.Description = '我是第二个图片'
+	# item2.PicUrl = 'http://img5.douban.com/view/photo/photo/public/p1875637769.jpg'
+	# item2.Url = 'http://movie.douban.com/subject/10777710/'	
+
+	# resp_msg.Articles = []
+	# resp_msg.Articles.append(item1)
+	# resp_msg.Articles.append(item2)
+
+	# 图片消息在管理页面上看不到，草！
+
+	resp_msg = RespTextMsg(FromUserName, int(CreateTime)+1)
+
+	resp_msg.Content = '你好，我是追剧达人. :) '+FromUserName
+
+	return resp_msg	
 
 
 def get_ReqMsg(xml):
@@ -333,26 +343,26 @@ def getElementText(text):
 
 
 if __name__=="__main__":
-	# xml='''
-	# 	<xml>
-	# 	 <ToUserName><![CDATA[toUser]]></ToUserName>
-	# 	 <FromUserName><![CDATA[fromUser]]></FromUserName> 
-	# 	 <CreateTime>1348831860</CreateTime>
-	# 	 <MsgType><![CDATA[text]]></MsgType>
-	# 	 <Content><![CDATA[this is a test 》》]]></Content>
-	# 	 <MsgId>1234567890123456</MsgId>
-	# 	</xml>
-	# '''
-
 	xml='''
-	<xml><ToUserName><![CDATA[toUser]]></ToUserName>
-		<FromUserName><![CDATA[FromUser]]></FromUserName>
-		<CreateTime>123456789</CreateTime>
-		<MsgType><![CDATA[event]]></MsgType>
-		<Event><![CDATA[subscribe]]></Event>
-		<EventKey><![CDATA[EVENTKEY]]></EventKey>
-	</xml>
+		<xml>
+		 <ToUserName><![CDATA[toUser]]></ToUserName>
+		 <FromUserName><![CDATA[fromUser]]></FromUserName> 
+		 <CreateTime>1348831860</CreateTime>
+		 <MsgType><![CDATA[text]]></MsgType>
+		 <Content><![CDATA[this is a test 》》]]></Content>
+		 <MsgId>1234567890123456</MsgId>
+		</xml>
 	'''
+
+	# xml='''
+	# <xml><ToUserName><![CDATA[toUser]]></ToUserName>
+	# 	<FromUserName><![CDATA[FromUser]]></FromUserName>
+	# 	<CreateTime>123456789</CreateTime>
+	# 	<MsgType><![CDATA[event]]></MsgType>
+	# 	<Event><![CDATA[subscribe]]></Event>
+	# 	<EventKey><![CDATA[EVENTKEY]]></EventKey>
+	# </xml>
+	# '''
 
 	msg = get_ReqMsg(xml)
 	print msg
