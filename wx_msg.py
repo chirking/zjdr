@@ -78,7 +78,7 @@ class TextMsg(BaseContentMsg):
 	def receive(self):
 		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		Msg.Content = self.Content+':你好~ <<self.FromUserName>>'
+		Msg.Content = self.Content+':你好~ <<'+self.FromUserName+'>>'
 
 		return Msg
 
