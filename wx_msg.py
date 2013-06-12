@@ -78,7 +78,7 @@ class TextMsg(BaseContentMsg):
 	def receive(self):
 		Msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		Msg.Content = self.Content+':呵呵<<>>>'
+		Msg.Content = self.Content+':你好~ <<self.FromUserName>>'
 
 		return Msg
 
@@ -126,30 +126,36 @@ class SubscribeEventMsg(BaseEventMsg):
 	def receive(self):
 		wx_subscribe(self.FromUserName)
 
-		resp_msg = RespNewsMsg(self.FromUserName, int(self.CreateTime)+1)
+		# resp_msg = RespNewsMsg(self.FromUserName, int(self.CreateTime)+1)
 
-		resp_msg.ArticleCount = 2
+		# resp_msg.ArticleCount = 2
 
-		base_pic_url = 'http://img3.douban.com/lpic/s26686430.jpg'
-		info_data = self.FromUserName
+		# base_pic_url = 'http://img3.douban.com/lpic/s26686430.jpg'
+		# info_data = self.FromUserName
 
-		info_pic_url = get_info_pic_url(base_pic_url, info_data)
+		# info_pic_url = get_info_pic_url(base_pic_url, info_data)
 
-		item1 = RespNewsMsgItem()
-		item1.Title = '你好，我是追剧达人'
-		item1.Description = '我是第一个图片'
-		item1.PicUrl = info_pic_url
-		item1.Url = 'http://book.douban.com/subject/11597326/'	
+		# item1 = RespNewsMsgItem()
+		# item1.Title = '你好，我是追剧达人'
+		# item1.Description = '我是第一个图片'
+		# item1.PicUrl = info_pic_url
+		# item1.Url = 'http://book.douban.com/subject/11597326/'	
 
-		item2 = RespNewsMsgItem()
-		item2.Title = '你好，我真的是追剧达人'
-		item2.Description = '我是第二个图片'
-		item2.PicUrl = 'http://img5.douban.com/view/photo/photo/public/p1875637769.jpg'
-		item2.Url = 'http://movie.douban.com/subject/10777710/'	
+		# item2 = RespNewsMsgItem()
+		# item2.Title = '你好，我真的是追剧达人'
+		# item2.Description = '我是第二个图片'
+		# item2.PicUrl = 'http://img5.douban.com/view/photo/photo/public/p1875637769.jpg'
+		# item2.Url = 'http://movie.douban.com/subject/10777710/'	
 
-		resp_msg.Articles = []
-		resp_msg.Articles.append(item1)
-		resp_msg.Articles.append(item2)
+		# resp_msg.Articles = []
+		# resp_msg.Articles.append(item1)
+		# resp_msg.Articles.append(item2)
+
+		# 图片消息在管理页面上看不到，草！
+
+		resp_msg = RespTextMsg(self.FromUserName, int(self.CreateTime)+1)
+
+		resp_msg.Content = '你好，我是追剧达人. :) '+self.FromUserName
 
 		return resp_msg
 

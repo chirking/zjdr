@@ -13,14 +13,14 @@ movieSubNotifyDAO = None
 class BaseDAO(object):
 	"""docstring for BaseDAO"""
 	def create_id(self, json):
-		if None!=json and None!=json['_id']:
+		if None!=json and '_id' in json:
 			json['id'] = str(json['_id'])
-			json['_id'] = None
+			json.pop('_id')
 		return json
 
 	def remove_id(self, json):
-		if None!=json and None!=json['_id']:
-			json['_id'] = None
+		if None!=json and '_id' in json:
+			json.pop('_id')
 		return json
 
 	def get_object_id(self, id):
@@ -69,6 +69,11 @@ class UserDAO(BaseDAO):
 	def get_user_by_wx_fakeid(self, wx_fakeid):
 		json = self.db.find_one({'wx_fakeid':wx_fakeid})
 		return self.to_User(json)
+
+	def update_user_info_by_id(self, id, user):
+		user.id = None
+		return self.db.update({'_id':ObjectId(id)}, {'$set':user.to_json()})
+
 
 
 class MovieDAO(BaseDAO):
@@ -198,18 +203,22 @@ if __name__=="__main__":
 
   #db_zjdr.movie.remove()	
 
-  movie = Movie()
-  movie.code = 'sherlock 1'
-  movie.name = u'夏洛克'
-  movie.e_name = 'sherlock'
-  movie.season = 1
-  print movie 
+  # movie = Movie()
+  # movie.code = 'sherlock 1'
+  # movie.name = u'夏洛克'
+  # movie.e_name = 'sherlock'
+  # movie.season = 1
+  # print movie 
 
-  movie1 = movieDAO.create_if_absent(movie.code, movie)
-  print movie1.name.encode('utf8')
+  # movie1 = movieDAO.create_if_absent(movie.code, movie)
+  # print movie1.name.encode('utf8')
 
-  movies = movieDAO.find_movie_by_name(u'夏洛克')
-  print movies[0]
+  # movies = movieDAO.find_movie_by_name(u'夏洛克')
+  # print movies[0]
+
+  print db_zjdr.user.find_one({'open_id':'oCpntjhPeYRhrLVu1X6wRJkDG95A'})
+
+  pass
 
 
 

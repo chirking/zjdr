@@ -32,6 +32,7 @@ class User(BaseDO):
   id = None
   open_id = None
   open_id_type = None
+  nick_name = None
   wx_fakeid = None
   status = None
 
