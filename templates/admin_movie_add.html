@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>追剧达人</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+
+      @media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+          float: none;
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/static/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="/static/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="/static/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">追剧达人</a>
+          <div class="nav-collapse collapse">
+            <p class="navbar-text pull-right">
+              Logged in as <a href="#" class="navbar-link">Username</a>
+            </p>
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">影片</li>
+              <li><a href="/zjdr/admin/movies">查看影片</a></li>
+              <li class="active"><a href="/zjdr/admin/movie/add">新增影片</a></li>
+              <li><a href="/zjdr/admin/movie/search">搜索影片</a></li>
+              <li><a href="#">Link</a></li>
+              <li class="nav-header">Sidebar</li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li class="nav-header">Sidebar</li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">
+          <!--<div class="hero-unit">
+            <h1>Hello, world!</h1>
+            <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+            <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+          </div>-->
+          <div class="row-fluid">
+            <div class="span9">
+              <form class="form-horizontal" action="/zjdr/admin/movie/add" method="post">
+                <div class="control-group">
+                  <label class="control-label" for="">唯一编码：</label>
+                  <div class="controls">
+                    <input type="text" name="code" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">影片名：</label>
+                  <div class="controls">
+                    <input type="text" name="name" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">英文名：</label>
+                  <div class="controls">
+                    <input type="text" name="e_name" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">别名：</label>
+                  <div class="controls">
+                    <input type="text" name="aliases" placeholder="">
+                    <label >(多个用"/"分隔)</label>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">第几季：</label>
+                  <div class="controls">
+                    <input type="text" name="season" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">简介：</label>
+                  <div class="controls">
+                    <textarea rows="10" name="summary" placeholder="" ></textarea>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">封面：</label>
+                  <div class="controls">
+                    <input type="text" name="pic_url" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">总集数：</label>
+                  <div class="controls">
+                    <input type="text" name="all_sets" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">当前更新集数：</label>
+                  <div class="controls">
+                    <input type="text" name="now_set" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">是否已完结：</label>
+                  <div class="controls">
+                    <input type="checkbox" name="is_finished">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">时间：</label>
+                  <div class="controls">
+                    <input type="text" name="begin_time" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">更新时间：</label>
+                  <div class="controls">
+                    <input type="text" name="update_time" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">更新类型：</label>
+                  <div class="controls">
+                    <select name="update_type" placeholder="">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">豆瓣url：</label>
+                  <div class="controls">
+                    <input type="text" name="douban_url" placeholder="">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="">优酷url：</label>
+                  <div class="controls">
+                    <input type="text" name="youku_url" placeholder="">
+                  </div>
+
+                </div>
+                <div class="control-group">
+                  <div class="controls">
+                    <!--<label class="checkbox">
+                      <input type="checkbox"> Remember me
+                    </label>-->
+                    <button type="submit" class="btn btn-primary">确定</button>
+                  </div>
+                </div>
+              </form>
+            </div><!--/span-->
+          </div><!--/row-->
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2013</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!--
+    <script src="/static/js/bootstrap-transition.js"></script>
+    <script src="/static/js/bootstrap-alert.js"></script>
+    <script src="/static/js/bootstrap-modal.js"></script>
+    <script src="/static/js/bootstrap-dropdown.js"></script>
+    <script src="/static/js/bootstrap-scrollspy.js"></script>
+    <script src="/static/js/bootstrap-tab.js"></script>
+    <script src="/static/js/bootstrap-tooltip.js"></script>
+    <script src="/static/js/bootstrap-popover.js"></script>
+    <script src="/static/js/bootstrap-button.js"></script>
+    <script src="/static/js/bootstrap-collapse.js"></script>
+    <script src="/static/js/bootstrap-carousel.js"></script>
+    <script src="/static/js/bootstrap-typeahead.js"></script>
+    -->
+
+  </body>
+</html>

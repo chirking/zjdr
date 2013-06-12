@@ -1,6 +1,6 @@
 #coding=utf-8
 
-from domain import User, Movie, MovieSub, MovieSubNotify
+from domain import User, Movie, MovieSub
 from mongo import db_zjdr
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
@@ -8,7 +8,6 @@ from pymongo import ASCENDING, DESCENDING
 userDAO = None
 movieDAO = None
 movieSubDAO = None
-movieSubNotifyDAO = None
 
 class BaseDAO(object):
 	"""docstring for BaseDAO"""
@@ -57,7 +56,7 @@ class UserDAO(BaseDAO):
 		return self.get_user_by_open_id(open_id, open_id_type)
 
 	def get_user(self, id):
-		json = self.db.find_one({'id':id})
+		json = self.db.find_one({'_id':ObjectId(id)})
 		return self.to_User(json)
 		
 
@@ -89,7 +88,7 @@ class MovieDAO(BaseDAO):
 	def to_Movies(self, jsons):
 		if None==jsons:
 			return None
-		return [self.to_movie(json) for json in jsons]	
+		return [self.to_Movie(json) for json in jsons]	
 
 	def insert(self, movie):
 		if None==movie:
@@ -106,6 +105,16 @@ class MovieDAO(BaseDAO):
 		self.insert(movie)
 		return self.get_movie_by_code(code)
 
+	def get_movies(self): 
+		jsons = self.db.find()
+		if None==jsons:
+			return 
+		moives = []
+		for json in jsons:
+			moives.append(self.to_Movie(json))
+		return moives
+
+
 	def get_movie_by_code(self, code): 
 		if None==code or ''==code:
 			return None
@@ -117,6 +126,19 @@ class MovieDAO(BaseDAO):
 			return None
 		jsons = self.db.find({'name':name}).sort('season', DESCENDING)
 		return self.to_Movies(jsons)
+
+	def find_movie_by_alias(self, alias):
+		if None==alias or ''==alias:
+			return None
+		jsons = self.db.find({'aliases':alias}).sort('season', DESCENDING)
+		return self.to_Movies(jsons)
+
+
+	def update_movie_by_code(self, code, movie):
+		print {'code':code}, {'$set':movie.to_json()}
+		return self.db.update({'code':code}, {'$set':movie.to_json()})
+
+
 
 	
 
@@ -149,43 +171,11 @@ class MovieSubDAO(BaseDAO):
 	def get_movie_sub(self, user_id, movie_code):
 		json = self.db.find_one({'user_id':user_id, 'movie_code':movie_code})
 		return self.to_MovieSub(json)
-
-
-class MovieSubNotifyDAO(object):
-	"""docstring for MovieSubNotifyDAO"""
-	
-	db = db_zjdr.movie_sub_notify
-
-	def to_MovieSubNotify(self, json):
-		if None==json:
-			return None
-		return MovieSubNotify(self.remove_id(json))
-
-	def insert(self, movie_sub_notify):
-		if None==movie_sub_notify:
-			return None
-		movie_sub_notify.crate_time = None
-		movie_sub_notify.modified_time = None
-		self.db.insert(movie_sub_notify.to_json())
-
-	def create_if_absent(self, user_id, movie_code, movie_sub_notify):
-		movie_sub_notify_ = self.get_movie_sub_notify(user_id, movie_code)
-		if movie_sub_notify_:
-			return movie_sub_notify_;
-		movie_sub_notify_.user_id = user_id
-		movie_sub_notify_.movie_code = movie_code
-		self.insert(movie_sub_notify_)
-		return self.get_movie_sub(user_id, movie_code)
-
-	def get_movie_sub_notify(self, user_id, movie_code):
-		json = self.db.find_one({'user_id':user_id, 'movie_code':movie_code})
-		return self.to_MovieSub(json)
 		
 
 userDAO = UserDAO()
 movieDAO = MovieDAO()
 movieSubDAO = MovieSubDAO()
-movieSubNotifyDAO = MovieSubNotifyDAO()
 
 
 if __name__=="__main__":

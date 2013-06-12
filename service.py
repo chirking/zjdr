@@ -1,7 +1,7 @@
 #coding=utf-8
 
-from domain import User, Movie, MovieSub, MovieSubNotify
-from mongo_dao import userDAO, movieDAO, movieSubDAO, movieSubNotifyDAO
+from domain import User, Movie, MovieSub
+from mongo_dao import userDAO, movieDAO, movieSubDAO
 
 import domain
 
@@ -42,15 +42,61 @@ def update_wx_user_info(open_id, wx_fakeid, nick_name):
 	return success
 
 
+def get_movies():
+
+	movies = movieDAO.get_movies()
+	return movies
+
+
+def get_movie_by_code(code):
+
+	movies = movieDAO.get_movie_by_code(code)
+	return movies
+
+
+def add_movie(code, movie):
+
+	movieDAO.create_if_absent(code, movie)
+
+
+def update_movie(code, movie):
+
+	movieDAO.update_movie_by_code(code, movie)
+
+
+def search_movies(word):
+
+	movies = []
+
+	movies_1 = movieDAO.find_movie_by_name(word)
+
+	movies_2 = movieDAO.find_movie_by_alias(word)
+
+	if None != movies_1:
+		movies = movies + movies_1
+	if None != movies_2:
+		movies = movies + movies_2
+
+	return movies
+
 
 
 if __name__=="__main__":
-	user = userDAO.get_user_by_open_id('1234556', domain.USER_OPEN_ID_TYPE_WX)
+	# user = userDAO.get_user_by_open_id('1234556', domain.USER_OPEN_ID_TYPE_WX)
 
-	print user
+	# print user
 
-	print update_wx_user_info('1234556', 'wx_fakeid_2', 'nick_name_1')
+	# print update_wx_user_info('1234556', 'wx_fakeid_2', 'nick_name_1')
 
-	user = userDAO.get_user_by_open_id('1234556', domain.USER_OPEN_ID_TYPE_WX)
+	# user = userDAO.get_user_by_open_id('1234556', domain.USER_OPEN_ID_TYPE_WX)
 
-	print user
+	# print user
+
+	print get_movies()[0].to_json()
+
+	print '权力的游戏'
+	print search_movies('权力的游戏')[0].to_json()
+	print '冰与火之歌'
+	print search_movies('冰与火之歌')[0].to_json()
+
+

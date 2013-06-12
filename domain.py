@@ -43,14 +43,16 @@ class Movie(BaseDO):
   code = None
   name = None
   e_name = None
-  season = None
-  summary = None
-  pic_url = None
-  all_sets = None
-  now_set = None
+  aliases = None # 别名，数组
+  season = None # 第几季
+  summary = None # 简介
+  pic_url = None 
+  all_sets = None # 一共多少集
+  now_set = None # 当前第几集
   is_finished = None
   begin_time = None
   update_time = None
+  update_type = None # 更新类型，1. youku，
   douban_url = None
   youku_url = None
 
@@ -70,16 +72,6 @@ class MovieSub(BaseDO):
   user_id = None
   movie_code = None
   status = None
-
-
-class MovieSubNotify(BaseDO):
-  """docstring for MovieSubNotify"""
-
-  user_id = None
-  movie_code = None
-  notify_time = None
-  notify_set = None
-  notify_his = None
 
 
 if __name__=="__main__":
